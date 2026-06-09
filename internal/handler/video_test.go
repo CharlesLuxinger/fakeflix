@@ -18,7 +18,10 @@ import (
 	"github.com/CharlesLuxinger/fakeflix/internal/service"
 )
 
-const mimeTypeJPEG = "image/jpeg"
+const (
+	mimeTypeMP4  = "video/mp4"
+	mimeTypeJPEG = "image/jpeg"
+)
 
 type mockSaveCall struct {
 	fh          *multipart.FileHeader
@@ -113,7 +116,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			},
 			wantStatus:      http.StatusCreated,
 			wantJSON:        true,
-			wantAllowedMIME: []string{"video/mp4", mimeTypeJPEG},
+			wantAllowedMIME: []string{mimeTypeMP4, mimeTypeJPEG},
 		},
 		{
 			name:         "missing title",
@@ -165,7 +168,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			wantBody: (&service.ErrInvalidMIMEType{
 				Got: mimeTypeJPEG,
 			}).Error() + "\n",
-			wantAllowedMIME: []string{"video/mp4"},
+			wantAllowedMIME: []string{mimeTypeMP4},
 		},
 		{
 			name:          "wrong thumbnail MIME — cleanup verified",
@@ -181,7 +184,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			},
 			wantStatus:      http.StatusBadRequest,
 			wantBody:        (&service.ErrInvalidMIMEType{}).Error() + "\n",
-			wantAllowedMIME: []string{"video/mp4", mimeTypeJPEG},
+			wantAllowedMIME: []string{mimeTypeMP4, mimeTypeJPEG},
 			wantCleanup:     []string{"saved-video.mp4"},
 		},
 		{
@@ -199,7 +202,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			},
 			wantStatus:      http.StatusInternalServerError,
 			wantBody:        "failed to save video record\n",
-			wantAllowedMIME: []string{"video/mp4", mimeTypeJPEG},
+			wantAllowedMIME: []string{mimeTypeMP4, mimeTypeJPEG},
 			wantCleanup:     []string{"db-video.mp4", "db-thumbnail.jpg"},
 		},
 		{
