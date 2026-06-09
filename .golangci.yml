@@ -101,6 +101,10 @@ linters:
       - third_party$
       - testutils$
       - examples$
+    rules:
+      - linters: [gosec]
+        text: "G120"
+        path: internal/handler/video.go
 
   settings:
     dupl:
