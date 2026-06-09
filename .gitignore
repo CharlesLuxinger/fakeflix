@@ -39,6 +39,7 @@ Thumbs.db
 
 # Agent tooling state
 .sisyphus/evidence/
+.sisyphus/*.local.md
 
 # Debug
 debug
