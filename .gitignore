@@ -38,12 +38,9 @@ go.work.sum
 Thumbs.db
 
 # Agent tooling state
-.sisyphus/
+.sisyphus/evidence/
 
 # Debug
 debug
 __debug_bin
 *.log
-
-#Sisyphus
-.sisyphus/evidence/** */
