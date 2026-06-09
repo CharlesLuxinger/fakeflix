@@ -11,7 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/CharlesLuxinger/fakeflix/internal/database"
 	"github.com/CharlesLuxinger/fakeflix/internal/handler"
+	"github.com/CharlesLuxinger/fakeflix/internal/repository"
 	"github.com/CharlesLuxinger/fakeflix/internal/service"
 )
 
@@ -20,9 +22,28 @@ func main() {
 		log.Fatalf("create uploads directory: %v", err)
 	}
 
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatalf("DATABASE_URL not set")
+	}
+
+	ctx := context.Background()
+
+	db, closeDB, err := database.Open(ctx, dsn)
+	if err != nil {
+		log.Fatalf("database: %v", err)
+	}
+
+	defer func() {
+		if err := closeDB(); err != nil {
+			log.Printf("close database: %v", err)
+		}
+	}()
+
 	videoSvc := service.DefaultVideoService()
+	videoRepo := repository.NewVideoRepository(db)
 	healthHandler := handler.NewHealth()
-	videoHandler := handler.NewVideo(videoSvc, "./uploads")
+	videoHandler := handler.NewVideo(videoSvc, videoRepo, "./uploads")
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /", healthHandler)
@@ -54,7 +75,9 @@ func main() {
 
 	if err := srv.Shutdown(ctx); err != nil {
 		cancel()
-		log.Fatalf("shutdown: %v", err)
+		log.Printf("shutdown: %v", err)
+
+		return
 	}
 
 	cancel()
