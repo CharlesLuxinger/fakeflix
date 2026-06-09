@@ -38,6 +38,8 @@ func (v *Video) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Body = http.MaxBytesReader(w, r.Body, 32<<20) // 32 MB limit
+
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		http.Error(w, "invalid multipart body", http.StatusBadRequest)
 
@@ -67,7 +69,7 @@ func (v *Video) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_, err = v.saver.SaveFile(thumbFiles[0], "image/jpeg")
 	if err != nil {
-		if removeErr := os.Remove(filepath.Join(v.uploadsDir, videoName)); removeErr != nil {
+		if removeErr := os.Remove(filepath.Join(v.uploadsDir, filepath.Base(videoName))); removeErr != nil {
 			log.Printf("failed to remove video after thumbnail save failure: %v", removeErr)
 		}
 

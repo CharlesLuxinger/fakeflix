@@ -36,7 +36,7 @@ func TestHealth_ServeHTTP(t *testing.T) {
 			t.Parallel()
 
 			h := handler.NewHealth()
-			r := httptest.NewRequest(tt.method, "/", nil)
+			r := httptest.NewRequestWithContext(t.Context(), tt.method, "/", nil)
 			w := httptest.NewRecorder()
 
 			h.ServeHTTP(w, r)

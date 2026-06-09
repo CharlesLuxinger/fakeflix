@@ -118,6 +118,7 @@ linters:
     nolintlint:
       require-explanation: true
       require-specific: true
+
 formatters:
   enable:
     - gofmt

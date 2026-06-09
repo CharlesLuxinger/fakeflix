@@ -14,6 +14,8 @@ import (
 	"github.com/CharlesLuxinger/fakeflix/internal/service"
 )
 
+const mimeTypeJPEG = "image/jpeg"
+
 type mockSaveCall struct {
 	fh          *multipart.FileHeader
 	allowedMIME string
@@ -85,7 +87,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			},
 			wantStatus:      http.StatusCreated,
 			wantBody:        "video uploaded",
-			wantAllowedMIME: []string{"video/mp4", "image/jpeg"},
+			wantAllowedMIME: []string{"video/mp4", mimeTypeJPEG},
 		},
 		{
 			name:         "missing video field",
@@ -107,11 +109,11 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			includeVideo: true,
 			includeThumb: true,
 			returns: []mockSaveReturn{
-				{err: &service.ErrInvalidMIMEType{Got: "image/jpeg"}},
+				{err: &service.ErrInvalidMIMEType{Got: mimeTypeJPEG}},
 			},
 			wantStatus: http.StatusBadRequest,
 			wantBody: (&service.ErrInvalidMIMEType{
-				Got: "image/jpeg",
+				Got: mimeTypeJPEG,
 			}).Error() + "\n",
 			wantAllowedMIME: []string{"video/mp4"},
 		},
@@ -127,7 +129,7 @@ func TestVideo_ServeHTTP(t *testing.T) {
 			},
 			wantStatus:      http.StatusBadRequest,
 			wantBody:        (&service.ErrInvalidMIMEType{}).Error() + "\n",
-			wantAllowedMIME: []string{"video/mp4", "image/jpeg"},
+			wantAllowedMIME: []string{"video/mp4", mimeTypeJPEG},
 			wantCleanup:     true,
 		},
 		{
@@ -202,7 +204,7 @@ func newVideoRequest(
 	t.Helper()
 
 	if options.invalidBody {
-		r := httptest.NewRequest(method, "/videos", bytes.NewBufferString("bad"))
+		r := httptest.NewRequestWithContext(t.Context(), method, "/videos", bytes.NewBufferString("bad"))
 		r.Header.Set("Content-Type", "text/plain")
 
 		return r
@@ -223,7 +225,7 @@ func newVideoRequest(
 		t.Fatalf("close multipart writer: %v", err)
 	}
 
-	r := httptest.NewRequest(method, "/videos", &body)
+	r := httptest.NewRequestWithContext(t.Context(), method, "/videos", &body)
 	r.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return r
