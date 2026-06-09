@@ -1,4 +1,4 @@
-# Developing Enterprise Applications, Evolutionary and Modular Architectures (Course)
+# Developing Enterprise Applications, Evolutionary and Modular Architectures
 
 This repository contains the source code used in the course **Developing Enterprise Applications, Evolutionary and Modular Architectures**, with a focus on how to evolve a real system from a simple monolith to a modular, testable structure ready to scale.
 
