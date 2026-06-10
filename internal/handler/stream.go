@@ -55,6 +55,7 @@ func (vs *VideoStream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//nolint:gosec,nolintlint // G706 suppressed: server-side diagnostic log, values quoted with %q
 		log.Printf("find video %q: %v", videoID, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
@@ -72,6 +73,7 @@ func (vs *VideoStream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//nolint:gosec,nolintlint // G706 suppressed: server-side diagnostic log, values quoted with %q
 		log.Printf("open video file %q: %v", filePath, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
@@ -80,12 +82,14 @@ func (vs *VideoStream) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if closeErr := file.Close(); closeErr != nil {
+			//nolint:gosec,nolintlint // G706 suppressed: server-side diagnostic log, values quoted with %q
 			log.Printf("close video file %q: %v", filePath, closeErr)
 		}
 	}()
 
 	stat, err := file.Stat()
 	if err != nil {
+		//nolint:gosec,nolintlint // G706 suppressed: server-side diagnostic log, values quoted with %q
 		log.Printf("stat video file %q: %v", filePath, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
