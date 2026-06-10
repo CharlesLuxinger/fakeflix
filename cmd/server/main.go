@@ -44,10 +44,12 @@ func main() {
 	videoRepo := repository.NewVideoRepository(db)
 	healthHandler := handler.NewHealth()
 	videoHandler := handler.NewVideo(videoSvc, videoRepo, "./uploads")
+	streamHandler := handler.NewVideoStream(videoRepo, "./uploads")
 
 	mux := http.NewServeMux()
 	mux.Handle("GET /", healthHandler)
 	mux.Handle("POST /video", videoHandler)
+	mux.Handle("GET /stream/{videoId}", streamHandler)
 
 	srv := &http.Server{
 		Addr:         ":3000",
